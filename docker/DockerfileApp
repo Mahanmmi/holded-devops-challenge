@@ -1,0 +1,9 @@
+FROM docker.io/golang:alpine as build
+RUN apk --no-cache add ca-certificates
+
+# Make a from scratch image to reduce the size and improve security
+FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY ./build/app /app
+
+CMD [ "/app" ]

@@ -20,4 +20,5 @@ module "app_ecr" {
       }
     ]
   })
+  repository_image_tag_mutability = "MUTABLE"
 }

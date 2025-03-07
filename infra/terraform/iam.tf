@@ -5,5 +5,6 @@ module "github-oidc" {
   create_oidc_provider = true
   create_oidc_role     = true
 
-  repositories              = ["mahanmmi/holded-devops-challenge"]
+  repositories              = ["Mahanmmi/holded-devops-challenge"]
+  oidc_role_attach_policies = ["arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"]
 }

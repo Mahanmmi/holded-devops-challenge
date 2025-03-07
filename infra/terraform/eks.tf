@@ -13,10 +13,6 @@ module "eks_ebs_csi_irsa_role" {
 }
 
 module "eks" {
-  providers = {
-    kubernetes = kubernetes.eks_kubernetes
-  }
-
   source  = "terraform-aws-modules/eks/aws"
 
   cluster_name                   = local.name
@@ -47,16 +43,6 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   enable_irsa = true
-  manage_aws_auth_configmap = true
-  # Give access to users with the admin_auth_role_arn to the EKS cluster, to manage it with kubectl or other means
-  aws_auth_roles = [
-    {
-      rolearn  = var.admin_auth_role_arn
-      username = "admin"
-      groups   = ["system:masters"]
-    }
-  ]
-
 
   eks_managed_node_groups = {
     main-pool = {
@@ -69,4 +55,23 @@ module "eks" {
       disk_size                  = 30
     }
   }
+}
+
+module "eks_auth" {
+  providers = {
+    kubernetes = kubernetes.eks_kubernetes
+  }
+
+  source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
+  version = "~> 20.0"
+
+  manage_aws_auth_configmap = true
+  # Give access to users with the admin_auth_role_arn to the EKS cluster, to manage it with kubectl or other means
+  aws_auth_roles = [
+    {
+      rolearn  = var.admin_auth_role_arn
+      username = "admin"
+      groups   = ["system:masters"]
+    }
+  ]
 }

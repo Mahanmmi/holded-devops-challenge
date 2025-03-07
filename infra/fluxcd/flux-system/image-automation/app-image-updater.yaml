@@ -1,0 +1,26 @@
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: app
+  namespace: flux-system
+spec:
+  image: 080839109040.dkr.ecr.eu-west-1.amazonaws.com
+  interval: 1m0s
+  secretRef:
+    name: ecr-credentials
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: app
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: app
+  filterTags:
+    pattern: '(?P<version>.*)'
+    extract: '$version'
+  policy:
+    semver:
+      range: v0.x.x

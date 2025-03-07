@@ -46,8 +46,9 @@ jobs:
             ./app/go.sum
             ./app/go.mod
       - name: Build
+        working-directory: ./app
         run: |
-          CC=/usr/bin/musl-gcc GOOS=linux GOARCH=amd64 go build -v -ldflags "-linkmode external -extldflags '-static' -s -w" -tags musl -o ./build/app ./app/server.go;
+          CC=/usr/bin/musl-gcc GOOS=linux GOARCH=amd64 go build -v -ldflags "-linkmode external -extldflags '-static' -s -w" -tags musl -o ../build/app ./server.go;
       # we pack the build to preserve file permissions
       - name: Pack build
         run: |

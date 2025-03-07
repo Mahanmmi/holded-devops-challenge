@@ -51,7 +51,7 @@ jobs:
           cache-dependency-path: "./app/go.sum"
       - name: Build
         run: |
-          CC=/usr/bin/musl-gcc GOOS=linux GOARCH=amd64 go build -v -ldflags "-linkmode external -extldflags '-static' -s -w" -tags musl -o ./build/app ./app;
+          CC=/usr/bin/musl-gcc GOOS=linux GOARCH=amd64 go build -v -ldflags "-linkmode external -extldflags '-static' -s -w" -tags musl -o ./build/app ./app/server.go;
       # we pack the build to preserve file permissions
       - name: Pack build
         run: |

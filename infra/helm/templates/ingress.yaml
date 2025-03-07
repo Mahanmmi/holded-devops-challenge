@@ -7,6 +7,10 @@ metadata:
     cert-manager.io/cluster-issuer: selfsigned-cluster-issuer
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - app.local
+      secretName: app-tls
   rules:
     - http:
         paths:

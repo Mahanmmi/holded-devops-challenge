@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-service
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: app-service
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-service
+  template:
+    metadata:
+      labels:
+        app: app-service
+    spec:
+      containers:
+        - name: app-service
+          image: "{{ .Values.registry}}/app:{{ .Values.tags.app }}"
+          imagePullPolicy: Always

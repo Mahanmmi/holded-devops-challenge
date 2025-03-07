@@ -31,7 +31,7 @@ metadata:
   name: ecr-credentials-sync
   namespace: flux-system
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::080839109040:role/github-oidc-provider-aws
+    eks.amazonaws.com/role-arn: arn:aws:iam::080839109040:role/flux-system-ecr-credentials-sync
 ---
 apiVersion: batch/v1
 kind: CronJob

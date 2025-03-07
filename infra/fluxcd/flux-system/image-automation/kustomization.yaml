@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - ecr-cred-automation.yaml
 - app-image-updater.yaml
+- flux-update-automation.yaml

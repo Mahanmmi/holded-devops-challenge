@@ -18,6 +18,3 @@ spec:
       reconcileStrategy: Revision
   install:
     createNamespace: true
-  values:
-    tags:
-      app: v0.0.1  # {"$imagepolicy": "flux-system:app:tag"}

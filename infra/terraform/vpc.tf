@@ -10,11 +10,17 @@ module "vpc" {
 
   private_subnet_ipv6_prefixes = [3, 4, 5]
   private_subnets              = [for k, v in slice(data.aws_availability_zones.available.names, 0, 3) : cidrsubnet(local.vpc_cidr, 4, k)]
+  private_subnet_tags = {
+      "kubernetes.io/role/internal-elb": "1"
+  }
 
   # Make sure IPv6 ips are assigned when a resource in public subnet is created
   public_subnet_assign_ipv6_address_on_creation = true
   public_subnet_ipv6_prefixes                   = [0]
   public_subnets                                = [cidrsubnet(local.vpc_cidr, 4, length(local.azs) + 1)]
+  public_subnet_tags = {
+    "kubernetes.io/role/elb": "1"
+  }
 
   create_igw         = true
   enable_nat_gateway = true
@@ -49,4 +55,48 @@ module "vpc" {
       ipv6_cidr_blocks = "::/0"
     }
   ]
+}
+
+# Vpc should be able to communicate with ec2 services so we add endpoints
+module "vpc_endpoints_sg" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 4.0"
+
+  name        = "${local.name}-vpc-endpoints"
+  description = "Security group for VPC endpoint access"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress_with_cidr_blocks = [
+    {
+      rule        = "https-443-tcp"
+      description = "VPC CIDR HTTPS"
+      cidr_blocks = join(",", module.vpc.private_subnets_cidr_blocks)
+    },
+  ]
+
+  egress_with_cidr_blocks = [
+    {
+      rule        = "https-443-tcp"
+      description = "All egress HTTPS"
+      cidr_blocks = "0.0.0.0/0"
+    },
+  ]
+}
+
+module "core_vpc_endpoints" {
+  source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+  version = "~> 4.0"
+
+  vpc_id             = module.vpc.vpc_id
+  security_group_ids = [module.vpc_endpoints_sg.security_group_id]
+
+  endpoints = merge(
+    { for service in toset(["ecr.api", "ecr.dkr", "ec2", "ec2messages", "elasticloadbalancing"]) :
+      replace(service, ".", "_") =>
+      {
+        service             = service
+        subnet_ids          = module.vpc.private_subnets
+        private_dns_enabled = true
+      }
+    })
 }

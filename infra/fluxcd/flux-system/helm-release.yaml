@@ -9,7 +9,7 @@ spec:
   releaseName: holded-devops-challenge
   chart:
     spec:
-      chart: ../../helm
+      chart: infra/helm
       sourceRef:
         kind: GitRepository
         name: flux-system

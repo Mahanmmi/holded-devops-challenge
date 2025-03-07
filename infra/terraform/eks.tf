@@ -46,12 +46,7 @@ module "eks" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  cluster_identity_providers = {
-    sts = {
-      client_id = "sts.amazonaws.com"
-    }
-  }
-
+  enable_irsa = true
   manage_aws_auth_configmap = true
   # Give access to users with the admin_auth_role_arn to the EKS cluster, to manage it with kubectl or other means
   aws_auth_roles = [

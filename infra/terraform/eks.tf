@@ -43,7 +43,7 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   enable_irsa = true
-
+  enable_cluster_creator_admin_permissions = true
   eks_managed_node_groups = {
     main-pool = {
       subnet_ids                 = module.vpc.private_subnets
@@ -58,6 +58,9 @@ module "eks" {
 }
 
 module "eks_auth" {
+  depends_on = [
+    module.eks
+  ]
   providers = {
     kubernetes = kubernetes.eks_kubernetes
   }

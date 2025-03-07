@@ -11,15 +11,17 @@ module "vpc" {
   private_subnet_ipv6_prefixes = [3, 4, 5]
   private_subnets              = [for k, v in slice(data.aws_availability_zones.available.names, 0, 3) : cidrsubnet(local.vpc_cidr, 4, k)]
   private_subnet_tags = {
-      "kubernetes.io/role/internal-elb": "1"
+    "kubernetes.io/role/internal-elb": "1"
+    "kubernetes.io/cluster/${local.name}": "shared"
   }
 
   # Make sure IPv6 ips are assigned when a resource in public subnet is created
+  public_subnet_ipv6_prefixes                   = [0, 1, 2]
   public_subnet_assign_ipv6_address_on_creation = true
-  public_subnet_ipv6_prefixes                   = [0]
-  public_subnets                                = [cidrsubnet(local.vpc_cidr, 4, length(local.azs) + 1)]
+  public_subnets                                = [for k, v in slice(data.aws_availability_zones.available.names, 0, 3) : cidrsubnet(local.vpc_cidr, 4, length(local.azs) + k)]
   public_subnet_tags = {
     "kubernetes.io/role/elb": "1"
+    "kubernetes.io/cluster/${local.name}": "shared"
   }
 
   create_igw         = true

@@ -2,24 +2,17 @@ package main
 
 import (
 	"fmt"
+	"github.com/labstack/echo/v4"
 	"log"
-	"net/http"
-	"time"
 )
 
-func appHandler(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println(time.Now(), "Hello from my new fresh server")
-
+func handler(c echo.Context) error {
+	fmt.Print("Hello, World!")
+	return c.String(200, "Hello, World!")
 }
 
 func main() {
-	http.HandleFunc("/", appHandler)
-
-	log.Println("Started, serving on port 8080")
-	err := http.ListenAndServe(":8080", nil)
-
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	echoServer := echo.New()
+	echoServer.GET("/", handler)
+	log.Fatal(echoServer.Start(":8080"))
 }

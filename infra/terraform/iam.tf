@@ -1,8 +1,9 @@
-module "ecr_write_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+module "github-oidc" {
+  source  = "terraform-module/github-oidc-provider/aws"
+  version = "~> 1"
 
-  name = "github-ecr-access"
-  subjects = [
-    "repo:mahanmmi/holded-devops-challenge",
-  ]
+  create_oidc_provider = true
+  create_oidc_role     = true
+
+  repositories              = ["mahanmmi/holded-devops-challenge"]
 }
